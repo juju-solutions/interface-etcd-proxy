@@ -19,13 +19,13 @@ from charms.reactive import scopes
 class EtcdClient(RelationBase):
     scope = scopes.GLOBAL
 
-    @hook('{requires:etcd}-relation-{joined,changed}')
+    @hook('{requires:etcd-proxy}-relation-{joined,changed}')
     def changed(self):
         self.set_state('{relation_name}.connected')
         if self.connection_string():
             self.set_state('{relation_name}.available')
 
-    @hook('{requires:etcd}-relation-{broken, departed}')
+    @hook('{requires:etcd-proxy}-relation-{broken, departed}')
     def broken(self):
         self.remove_state('{relation_name}.available')
         self.remove_state('{relation_name}.connected')
