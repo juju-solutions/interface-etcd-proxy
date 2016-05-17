@@ -11,17 +11,17 @@ This interface layer will set the following states, as appropriate:
   * `{relation_name}.connected` The relation is established, but Etcd may not
   yet have provided any connection or service information.
 
-  * `{relation_name}.available` Etcd has provided its connection string
-    information, and is ready to serve as a KV store.
+  * `{relation_name}.available` Etcd has provided its cluster string
+    information, and is ready to handle incoming connections.
     The provided information can be accessed via the following methods:
-      * `connection_string()`
+      * `cluster_string()`
 
 
 For example, a common application for this is configuring an applications
 backend kv storage, like Docker.
 
 ```python
-@when('etcd-proxy.available')
+@when('proxy.available')
 def prepare_etcd_proxy(proxy):
     con_string = proxy.cluster_string()
     opts = {}
@@ -37,7 +37,7 @@ A charm providing this interface is providing the Etcd cluster management
 connection string. This is similar to what ETCD requires when peering, declared as:
 
 ```shell
-etcd0=https://192.168.1.2:2380,etcd1=192.168.2.22:2380
+etcd0=https://192.168.1.2:2380,etcd1=https://192.168.2.22:2380
 ```
 
 This interface layer will set the following states, as appropriate:
@@ -51,16 +51,10 @@ This interface layer will set the following states, as appropriate:
 #### Example (with the assumption you have layer-etcd included):
 
 ```python
-
-@when('db.connected')
-def send_connection_details(client):
+@when('proxy.connected')
+def send_cluster_details(proxy):
     etcd = EtcdHelper()
-    data = etcd.cluster_data()
-    hosts = []
-    for unit in data:
-        hosts.append(data[unit]['private_address'])
-    client.provide_connection_string(hosts, config('port'))
-
+    proxy.provide_cluster_string(etcd.cluster_string())
 ```
 
 
@@ -74,4 +68,4 @@ def send_connection_details(client):
 
 - [Etcd](https://coreos.com/etcd/) home page
 - [Etcd bug trackers](https://github.com/coreos/etcd/issues)
-- [Apache Hadoop Juju Charm](http://jujucharms.com/?text=etcd)
+- [Etcd Juju Charm](http://jujucharms.com/?text=etcd)
