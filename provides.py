@@ -19,17 +19,17 @@ from charms.reactive import scopes
 class EtcdProvider(RelationBase):
     scope = scopes.GLOBAL
 
-    @hook('{provides:etcd}-relation-{joined,changed}')
+    @hook('{provides:etcd-proxy}-relation-{joined,changed}')
     def joined_or_changed(self):
         ''' Set state so the unit can identify it is connecting '''
         self.set_state('{relation_name}.connected')
 
-    @hook('{provides:etcd}-relation-{broken,departed}')
+    @hook('{provides:etcd-proxy}-relation-{broken,departed}')
     def broken_or_departed(self):
         ''' Set state so the unit can identify it is departing '''
         self.remove_state('{relation_name}.connected')
 
-    def provide_connection_string(self, cluster_string):
+    def provide_cluster_string(self, cluster_string):
         '''
         @params cluster_string - fully formed etcd cluster string.
         This is akin to the --initial-cluster-string setting to the
