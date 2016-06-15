@@ -30,8 +30,13 @@ applications backend kv storage, like Docker.
 @when('proxy.available')
 def prepare_etcd_proxy(proxy):
     con_string = proxy.cluster_string()
+    # Save certificates to disk
+    proxy.save_client_credentials('/etc/ssl/etcd')
     opts = {}
     opts['cluster_string'] = con_string
+    opts['client_ca'] = '/etc/ssl/etcd/client-ca.pem'
+    opts['client_cert'] = '/etc/ssl/etcd/client-cert.pem'
+    opts['client_key'] = '/etc/ssl/etcd/client-key.pem'
     render('proxy_systemd_template', '/etc/systemd/system/etcd-proxy.service', opts)
 
 ```
