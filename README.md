@@ -83,10 +83,10 @@ def read_file_contents(filepath):
 # Contact Information
 
 ### Maintainer
-- Charles Butler <charles.butler@canonical.com>
+- Charles Butler &lt;[charles.butler@canonical.com](mailto:charles.butler@canonical.com)&gt;
 
 ### Contributors
-- Matthew Bruzek <matthew.bruzek@canonical.com>
+- Mathew Bruzek  &lt;[mathew.bruzek@canonical.com](mailto:mathew.bruzek@canonical.com)&gt;
 
 # Etcd
 
