@@ -16,9 +16,15 @@ This interface layer will set the following states, as appropriate:
     The provided information can be accessed via the following methods:
       * `cluster_string()`
 
+  * `{relation_name}.tls.available` Etcd has provided client
+  connection credentials for TLS communication.
+      * `client_ca` - CA certificate
+      * `client_cert` - Client Cert
+      * `client_key` - Client Key
 
-For example, a common application for this is configuring an applications
-backend kv storage, like Docker.
+
+For example, a common application for this is configuring an
+applications backend kv storage, like Docker.
 
 ```python
 @when('proxy.available')
@@ -42,19 +48,35 @@ etcd0=https://192.168.1.2:2380,etcd1=https://192.168.2.22:2380
 
 This interface layer will set the following states, as appropriate:
 
-  * `{relation_name}.connected` One or more clients of any type have
-    been related.  The charm should call the following methods to provide
-    the appropriate information to the clients:
+  * `{relation_name}.connected` One or more clients of any type
+  have been related.  The charm should call the following
+  methods to provide the appropriate information to the clients:
 
     * `{relation_name}.provide_cluster_string()`
 
-#### Example (with the assumption you have layer-etcd included):
+  * Additionally to secure the Etcd network connections, All of
+  the client certificate keys must be set, which is conveniently
+  enabled as a method on the interface:
+
+
+#### Example:
 
 ```python
 @when('proxy.connected')
 def send_cluster_details(proxy):
-    etcd = EtcdHelper()
-    proxy.provide_cluster_string(etcd.cluster_string())
+    bag = EtcdDatabag()
+    # Read the client credentials
+    ca = read_file_contents('/etc/ssl/etcd/ca.pem')
+    cert = read_file_contents('/etc/ssl/etcd/client-cert.pem')
+    key = read_file_contents('/etc/ssl/etcd/client-key.pem')
+    # Set the cluster string for bootstrap
+    proxy.set_cluster_string(bag.cluster_string())
+    # Set the client credentials
+    proxy.set_client_credentials(key, cert, ca)
+
+def read_file_contents(filepath):
+    with open(filepath, 'r') as fp:
+        return fp.read(filepath)
 ```
 
 
@@ -63,9 +85,11 @@ def send_cluster_details(proxy):
 ### Maintainer
 - Charles Butler <charles.butler@canonical.com>
 
+### Contributors
+- Matthew Bruzek <matthew.bruzek@canonical.com>
 
 # Etcd
 
 - [Etcd](https://coreos.com/etcd/) home page
 - [Etcd bug trackers](https://github.com/coreos/etcd/issues)
-- [Etcd Juju Charm](http://jujucharms.com/?text=etcd)
+- [Etcd Juju Charm](http://github.com/juju-solutions/layer-etcd)

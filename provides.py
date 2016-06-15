@@ -29,6 +29,18 @@ class EtcdProvider(RelationBase):
         ''' Set state so the unit can identify it is departing '''
         self.remove_state('{relation_name}.connected')
 
+    def set_client_credentials(self, key, cert, ca):
+        ''' Set the client credentials on the global conversation for this
+        relation. '''
+        self.set_remote('client_key', key)
+        self.set_remote('client_ca', ca)
+        self.set_remote('client_cert', cert)
+
+    def set_cluster_string(self, cluster_string):
+        ''' Set the cluster string on the convsersation '''
+        self.set_remote('cluster_string', cluster_string)
+
+    # Kept for backwords compatibility
     def provide_cluster_string(self, cluster_string):
         '''
         @params cluster_string - fully formed etcd cluster string.
@@ -36,5 +48,4 @@ class EtcdProvider(RelationBase):
         etcd-daemon. Proxy's will need to know each declared member of
         the cluster to effectively proxy.
         '''
-
         self.set_remote('cluster_string', cluster_string)
