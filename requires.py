@@ -39,7 +39,7 @@ class EtcdClientProxy(RelationBase):
 
     def get_cluster_string(self):
         ''' Return the connection string, if available, or None. '''
-        return self.get_remote('cluster_string')
+        return self.get_remote('cluster')
 
     def get_client_credentials(self):
         ''' Return a dict with the client certificate, ca and key to
