@@ -57,7 +57,7 @@ This interface layer will set the following states, as appropriate:
   have been related.  The charm should call the following
   methods to provide the appropriate information to the clients:
 
-    * `{relation_name}.provide_cluster_string()`
+    * `{relation_name}.set_cluster_string()`
 
   * Additionally to secure the Etcd network connections, All of
   the client certificate keys must be set, which is conveniently
@@ -67,21 +67,31 @@ This interface layer will set the following states, as appropriate:
 #### Example:
 
 ```python
+from charmhelpers.core import hookenv
+# this module lives in the etcd charm in lib/etcdctl.py
+import etcdctl
+
 @when('proxy.connected')
 def send_cluster_details(proxy):
-    bag = EtcdDatabag()
-    # Read the client credentials
-    ca = read_file_contents('/etc/ssl/etcd/ca.pem')
-    cert = read_file_contents('/etc/ssl/etcd/client-cert.pem')
-    key = read_file_contents('/etc/ssl/etcd/client-key.pem')
-    # Set the cluster string for bootstrap
-    proxy.set_cluster_string(bag.cluster_string())
-    # Set the client credentials
+    # ETCD charm provides client keys via leader_data
+    cert = hookenv.leader_get('client_certificate')
+    key = hookenv.leader_get('client_key')
+    ca = hookenv.leader_get('certificate_authority')
+    # set the certificates on the conversation
     proxy.set_client_credentials(key, cert, ca)
 
-def read_file_contents(filepath):
-    with open(filepath, 'r') as fp:
-        return fp.read(filepath)
+    # format a list of cluster participants
+    etcdctl = etcdctl.EtcdCtl()
+    peers = etcdctl.member_list()
+    cluster = []
+    for peer in peers:
+        # Potential member doing registration. Default to skip
+        if 'peer_urls' not in peer.keys() or not peer['peer_urls']:
+            continue
+        peer_string = "{}={}".format(peer['name'], peer['peer_urls'])
+        cluster.append(peer_string)
+    # set the cluster string on the conversation
+    proxy.set_cluster_string(','.join(cluster))
 ```
 
 
