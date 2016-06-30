@@ -38,7 +38,7 @@ class EtcdProvider(RelationBase):
 
     def set_cluster_string(self, cluster_string):
         ''' Set the cluster string on the convsersation '''
-        self.set_remote('cluster_string', cluster_string)
+        self.set_remote('cluster', cluster_string)
 
     # Kept for backwords compatibility
     def provide_cluster_string(self, cluster_string):
@@ -48,4 +48,4 @@ class EtcdProvider(RelationBase):
         etcd-daemon. Proxy's will need to know each declared member of
         the cluster to effectively proxy.
         '''
-        self.set_remote('cluster_string', cluster_string)
+        self.set_remote('cluster', cluster_string)
