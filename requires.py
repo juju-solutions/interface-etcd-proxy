@@ -23,7 +23,7 @@ class EtcdClientProxy(RelationBase):
     @hook('{requires:etcd-proxy}-relation-{joined,changed}')
     def changed(self):
         self.set_state('{relation_name}.connected')
-        if self.get_connection_string():
+        if self.get_cluster_string():
             self.set_state('{relation_name}.available')
             # Get the ca, key, cert from the relation data.
             cert = self.get_client_credentials()
