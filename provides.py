@@ -40,6 +40,10 @@ class EtcdProvider(RelationBase):
         ''' Set the cluster string on the convsersation '''
         self.set_remote('cluster', cluster_string)
 
+    def set_client_urls(self, client_urls):
+        ''' Set the client urls on the convsersation '''
+        self.set_remote('client_urls', client_urls)
+
     # Kept for backwords compatibility
     def provide_cluster_string(self, cluster_string):
         '''
